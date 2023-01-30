@@ -1,14 +1,5 @@
 import { Router } from "express";
-import {
-	userCreate,
-	userDelete,
-	userIndex,
-	userShow,
-} from "../controllers/UserController";
-
+import { userRouter } from "./user";
 export const router = Router();
 
-router.get("/", userIndex);
-router.get("/:id", userShow);
-router.post("/", userCreate);
-router.delete("/:id", userDelete);
+router.use("/user", userRouter);
