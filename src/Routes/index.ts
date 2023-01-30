@@ -1,7 +1,14 @@
-import { Router } from "express"
+import { Router } from "express";
+import {
+	userCreate,
+	userDelete,
+	userIndex,
+	userShow,
+} from "../controllers/UserController";
 
-export const router = Router()
+export const router = Router();
 
-router.get("/", (req, res) => {
-	return res.json({message: "Hello my sir"})
-})
+router.get("/", userIndex);
+router.get("/:id", userShow);
+router.post("/", userCreate);
+router.delete("/:id", userDelete);
