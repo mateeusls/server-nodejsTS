@@ -54,7 +54,7 @@ export const EnderecosController = async (req: Request, res: Response) => {
 
 	const response = await api({
 		method: "POST",
-		url: "Creas/Listar",
+		url: "Enderecos/Listar",
 		data: { prfCadCodRnp: rnp },
 	});
 
