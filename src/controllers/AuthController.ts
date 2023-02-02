@@ -6,7 +6,7 @@ import { prisma } from "../lib/prisma";
 export const AuthController = async (req: Request, res: Response) => {
 	const { login, password } = req.body;
 
-	const user = await prisma.user.findFirst({
+	const user = await prisma.user.findUnique({
 		where: {
 			cpf: login,
 		},
