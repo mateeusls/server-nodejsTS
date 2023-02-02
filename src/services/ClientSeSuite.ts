@@ -8,7 +8,8 @@ const user = {
 
 export async function ClientSoap(componenteSuite: string) {
 	const client = await createClientAsync(
-		`http://se.creape.org.br/se/ws/${componenteSuite}.php?wsdl`
+		`http://se.creape.org.br/se/ws/${componenteSuite}.php?wsdl`,
+		{}
 	);
 
 	const basicAuth = new BasicAuthSecurity(user.login, user.password);

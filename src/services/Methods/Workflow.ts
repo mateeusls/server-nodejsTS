@@ -1,11 +1,17 @@
+import fs from "fs";
+import {
+	ExecuteActivityProps,
+	NewChildEntityRecordProps,
+	NewWorkflowEditDataProps,
+} from "../../interfaces/WorkflowInterface";
 import { ClientWF } from "../ClientSeSuite";
 
-export async function NewChildEntityRecord(
+export async function NewChildEntityRecord({
 	wfid,
-	mainentityid,
+	attributelist,
 	childrelationshipid,
-	attributelist
-) {
+	mainentityid,
+}: NewChildEntityRecordProps) {
 	const client = await ClientWF();
 
 	const arr = [];
@@ -43,13 +49,13 @@ export async function NewChildEntityRecord(
 	}
 }
 
-export async function NewWorkflowEditData(
+export async function NewWorkflowEditData({
 	processid,
 	wftitle,
 	entityid,
 	attributelist,
-	filelist
-) {
+	filelist,
+}: NewWorkflowEditDataProps) {
 	const client = await ClientWF();
 
 	const arr = [];
@@ -58,6 +64,17 @@ export async function NewWorkflowEditData(
 			EntityAttributeID: `${i}`,
 			EntityAttributeValue: `${attributelist[i]}`,
 		});
+	}
+
+	const files = [];
+	for (const i in filelist) {
+		for (const a of filelist[i]) {
+			files.push({
+				EntityAttributeID: i,
+				FileName: a.filename,
+				FileContent: fs.readFileSync(a.path).toString("base64"),
+			});
+		}
 	}
 	try {
 		const args = {
@@ -74,7 +91,7 @@ export async function NewWorkflowEditData(
 						],
 						EntityAttributeFileList: [
 							{
-								EntityAttributeFile: filelist,
+								EntityAttributeFile: files,
 							},
 						],
 					},
@@ -82,8 +99,6 @@ export async function NewWorkflowEditData(
 			],
 		};
 		const results = await client.newWorkflowEditDataAsync(args);
-
-		console.log(results[0]);
 		return results[0];
 	} catch (error) {
 		console.log(error);
@@ -91,10 +106,26 @@ export async function NewWorkflowEditData(
 	}
 }
 
-// NewWorkflowEditData(
-// 	"mpp01-prc-regprofissional",
-// 	"Teste API",
-// 	"registroprof",
-// 	{ nomeprofissiona: "Matheus Teste - 30/01" },
-// 	""
-// );
+export async function ExecuteActivity({
+	wfid,
+	activityid,
+	ActionSequence,
+}: ExecuteActivityProps) {
+	const client = await ClientWF();
+
+	try {
+		const args = {
+			WorkflowID: wfid,
+			ActivityID: activityid,
+			ActionSequence: ActionSequence,
+			UserID: "",
+			ActivityOrder: "",
+		};
+		const results = await client.executeActivityAsync(args);
+
+		return results[0];
+	} catch (error) {
+		console.log(error);
+		return error;
+	}
+}

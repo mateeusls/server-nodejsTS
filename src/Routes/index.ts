@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { userRouter } from "./user";
 export const router = Router();
 
+import { confeaApiRouter } from "./confeaApi";
+import { userRouter } from "./user";
+import { workflowRouter } from "./workflow";
+
 router.use("/user", userRouter);
+router.use("/wf", workflowRouter);
+router.use("/api", confeaApiRouter);
