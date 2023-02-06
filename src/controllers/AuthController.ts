@@ -26,7 +26,13 @@ export const AuthController = async (req: Request, res: Response) => {
 				}
 			);
 
-			res.json({ user, token });
+			const userData = {
+				...user,
+				teste: "teste",
+				address: "Rua",
+			};
+
+			res.json({ userData, token });
 		} else {
 			res.status(401).json({ status: 401, message: "Senha Inválida" });
 		}
