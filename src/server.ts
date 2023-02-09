@@ -1,7 +1,7 @@
+require("dotenv").config();
 import cors from "cors";
 import express from "express";
 import { router } from "./Routes";
-require("dotenv").config();
 const app = express();
 
 app.use(express.json());
@@ -14,7 +14,13 @@ app.use((req, res, next) => {
 	);
 	//Quais são os métodos que a conexão pode realizar na API
 	res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-	app.use(cors());
+	app.use(
+		cors({
+			origin: "*",
+			methods: ["GET", "POST", "PUT", "DELETE"],
+			allowedHeaders: ["Content-Type", "Authorization"],
+		})
+	);
 	next();
 });
 app.use(router);

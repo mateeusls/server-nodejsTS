@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { api } from "../../lib/api";
+import { api } from "../../services/api";
 
 export const ProfissionaisController = async (req: Request, res: Response) => {
 	const { rnp } = req.body;
