@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
@@ -33,24 +34,33 @@ export async function userCreate(req: Request, res: Response) {
 			if (err) {
 				return res.status(500).json({ message: "Erro ao criar hash", err });
 			} else {
-				const user = await prisma.user.create({
-					data: {
-						name: name,
-						email: email,
-						cpf: cpf,
-						password: hash,
-						rnp: rnp,
-					},
-					select: {
-						id: true,
-						name: true,
-						cpf: true,
-						rnp: true,
-						email: true,
-						password: false,
-					},
-				});
-				return res.json(user);
+				try {
+					const user = await prisma.user.create({
+						data: {
+							name: name,
+							email: email,
+							cpf: cpf,
+							password: hash,
+							rnp: rnp,
+						},
+						select: {
+							id: true,
+							name: true,
+							cpf: true,
+							rnp: true,
+							email: true,
+							password: false,
+						},
+					});
+					return res.json(user);
+				} catch (e) {
+					if (e instanceof Prisma.PrismaClientKnownRequestError) {
+						// The .code property can be accessed in a type-safe manner
+						if (e.code === "P2002") {
+							return res.json({ message: "Usuário já cadastrado" });
+						}
+					}
+				}
 			}
 		});
 	}
