@@ -1,37 +1,69 @@
-import { randomUUID } from "crypto";
+import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
+import { prisma } from "../lib/prisma";
+import { api } from "../services/api";
 
-interface UserProps {
-	id: string;
-	name: string;
-	email: string;
-}
-
-const userDatabase: UserProps[] = [];
+// CPF - 00778021440; RNP - 1806240335
 
 export async function userIndex(req: Request, res: Response) {
-	return res.json(userDatabase);
+	const { rnp } = await req.body;
+
+	const users = await prisma.user.findFirst({
+		where: {
+			rnp: rnp,
+		},
+	});
+
+	return res.json(users);
 }
 
 export async function userCreate(req: Request, res: Response) {
-	const { name, email } = req.body;
-	const id = randomUUID();
+	const { name, email, cpf, password } = await req.body;
 
-	const user: UserProps = {
-		id,
-		name,
-		email,
-	};
+	const { data } = await api({
+		method: "POST",
+		url: "Profissionais/Listar",
+		data: { sisIdtPrfNroCpf: cpf },
+	});
 
-	userDatabase.push(user);
+	const rnp = data.entidade[0].PrfCadCodRnp;
 
-	return res.json(user);
+	if (rnp) {
+		bcrypt.hash(password, 10, async (err, hash) => {
+			if (err) {
+				return res.status(500).json({ message: "Erro ao criar hash", err });
+			} else {
+				const user = await prisma.user.create({
+					data: {
+						name: name,
+						email: email,
+						cpf: cpf,
+						password: hash,
+						rnp: rnp,
+					},
+					select: {
+						id: true,
+						name: true,
+						cpf: true,
+						rnp: true,
+						email: true,
+						password: false,
+					},
+				});
+				return res.json(user);
+			}
+		});
+	}
 }
 
 export async function userShow(req: Request, res: Response) {
 	const { id } = req.params;
 
-	const user = userDatabase.find((user) => user.id === id);
+	const user = await prisma.user.findFirst({
+		where: {
+			id: Number(id),
+		},
+	});
 
 	return res.json(user);
 }
@@ -39,12 +71,19 @@ export async function userShow(req: Request, res: Response) {
 export async function userDelete(req: Request, res: Response) {
 	const { id } = req.params;
 
-	const userIndex = userDatabase.findIndex((user) => user.id === id);
-
-	userDatabase.slice(userIndex, 1);
-
-	return res.json({
-		status: "SUCCESS",
-		message: "Usuário deletado com sucesso",
+	const user = await prisma.user.delete({
+		where: {
+			id: Number(id),
+		},
+		select: {
+			id: true,
+			name: true,
+			cpf: true,
+			rnp: true,
+			email: true,
+			password: false,
+		},
 	});
+
+	return res.json({ message: "Usuário deletado com sucesso", user });
 }
