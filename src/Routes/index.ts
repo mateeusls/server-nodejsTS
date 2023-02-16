@@ -4,6 +4,7 @@ export const router = Router();
 
 import { authRouter } from "./auth";
 import { confeaApiRouter } from "./confeaApi";
+import { formsRouter } from "./forms";
 import { userRouter } from "./user";
 
 router.get("/", verifyToken, (req: Request, res: Response) => {
@@ -13,3 +14,4 @@ router.get("/", verifyToken, (req: Request, res: Response) => {
 router.use("/user", userRouter);
 router.use("/api", confeaApiRouter);
 router.use("/auth", authRouter);
+router.use("/forms", formsRouter);
