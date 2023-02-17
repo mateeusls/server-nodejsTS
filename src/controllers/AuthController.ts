@@ -3,6 +3,12 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
 
+interface JWT {
+	id: number;
+	iat: number;
+	exp: number;
+}
+
 export const AuthController = async (req: Request, res: Response) => {
 	const { login, password } = req.body;
 
@@ -17,22 +23,17 @@ export const AuthController = async (req: Request, res: Response) => {
 
 		delete user.password;
 
+		const id = user.id;
 		if (validPassword) {
-			const token = jwt.sign(
-				{ user: user.id },
-				"d41d8cd98f00b204e9800998ecf8427e&",
-				{
-					expiresIn: "1h",
-				}
-			);
+			const token = jwt.sign({ id }, "d41d8cd98f00b204e9800998ecf8427e&", {
+				expiresIn: "1h",
+			});
 
 			const userData = {
 				...user,
-				teste: "teste",
-				address: "Rua",
 			};
 
-			res.json({ userData, token });
+			res.json({ user, token });
 		} else {
 			res.status(401).json({ status: 401, message: "Senha Inválida" });
 		}
@@ -44,12 +45,15 @@ export const AuthController = async (req: Request, res: Response) => {
 export const verifyToken = async (req: Request, res: Response, next: any) => {
 	const { token } = req.body;
 	try {
-		const decoded = jwt.verify(token, "d41d8cd98f00b204e9800998ecf8427e&");
+		const decoded = jwt.verify(
+			token,
+			"d41d8cd98f00b204e9800998ecf8427e&"
+		) as JWT;
 
 		if (decoded) {
 			const user = await prisma.user.findFirst({
 				where: {
-					id: decoded.user,
+					id: decoded.id,
 				},
 			});
 			delete user.password;

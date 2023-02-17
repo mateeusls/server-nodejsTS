@@ -5,7 +5,6 @@ import { Request, Response } from "express";
 
 export async function CargoFuncao(req: Request, res: Response) {
 	const processid = "mpp01-pcr-artcargofuncao";
-	const wftitle = req.body.numeroart;
 	const entityid = "artcargoofuncao";
 	const dominio = process.env.DOMINIO_SESUITE;
 
@@ -21,7 +20,7 @@ export async function CargoFuncao(req: Request, res: Response) {
 
 	const datas = {
 		processid,
-		wftitle: req.body.numeroart,
+		wftitle: req.body.nomeprofissiona,
 		entityid,
 		dominio,
 		args: req.body,
