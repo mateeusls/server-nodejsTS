@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import { api } from "../../services/api";
 
 export const ProfissionaisController = async (req: Request, res: Response) => {
-	const { rnp } = req.body;
+	const { rnp, cpf } = req.body;
 
 	const response = await api({
 		method: "POST",
 		url: "Profissionais/Listar",
-		data: { prfCadCodRnp: rnp },
+		data: { prfCadCodRnp: rnp || "", sisIdtPrfNroCpf: cpf || "" },
 	});
 
 	if (response.data.entidade.length > 0) {

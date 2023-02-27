@@ -49,8 +49,6 @@ export async function CargoFuncao(req: Request, res: Response) {
 					data: data,
 				});
 
-				console.log(response.data, respActivity.data);
-
 				res.json({
 					instance: response.data,
 					activity: respActivity.data,
