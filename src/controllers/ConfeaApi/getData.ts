@@ -20,33 +20,41 @@ export const ProfissionaisController = async (req: Request, res: Response) => {
 export const CarteirasController = async (req: Request, res: Response) => {
 	const { rnp } = req.body;
 
-	const response = await api({
+	await api({
 		method: "POST",
 		url: "Carteiras/Listar",
 		data: { prfCadCodRnp: rnp },
-	});
-
-	if (response.data.entidade.length > 0) {
-		return res.status(200).json(response.data.entidade[0]);
-	} else {
-		return res.status(404).json(response.data);
-	}
+	})
+		.then((response) => {
+			if (response.data.entidade.length > 0) {
+				return res.status(200).json(response.data.entidade[0]);
+			}
+		})
+		.catch((error) => {
+			if (error.response.data.status === 400) {
+				return res.status(404).json({ message: "Profissional não encontrado" });
+			}
+		});
 };
 
 export const CreasController = async (req: Request, res: Response) => {
 	const { creCadCod } = req.body;
 
-	const response = await api({
+	await api({
 		method: "POST",
 		url: "Creas/Listar",
 		data: { creCadCod: creCadCod },
-	});
-
-	if (response.data.entidade.length > 0) {
-		return res.status(200).json(response.data.entidade[0]);
-	} else {
-		return res.status(404).json(response.data);
-	}
+	})
+		.then((response) => {
+			if (response.data.entidade.length > 0) {
+				return res.status(200).json(response.data.entidade[0]);
+			}
+		})
+		.catch((error) => {
+			if (error.response.data.status === 400) {
+				return res.status(404).json({ message: "Crea não encontrado" });
+			}
+		});
 };
 
 export const EnderecosController = async (req: Request, res: Response) => {
@@ -103,17 +111,21 @@ export const ImagensController = async (req: Request, res: Response) => {
 export const TitulosController = async (req: Request, res: Response) => {
 	const { rnp } = req.body;
 
-	const response = await api({
+	await api({
 		method: "POST",
 		url: "Titulos/Listar",
 		data: { prfCadCodRnp: rnp },
-	});
-
-	if (response.data.entidade.length > 0) {
-		return res.status(200).json(response.data.entidade[0]);
-	} else {
-		return res.status(404).json(response.data);
-	}
+	})
+		.then((response) => {
+			if (response.data.entidade.length > 0) {
+				return res.status(200).json(response.data.entidade[0]);
+			}
+		})
+		.catch((error) => {
+			if (error.response.data.status === 400) {
+				return res.status(404).json({ message: "Profissional não encontrado" });
+			}
+		});
 };
 
 export const VistosController = async (req: Request, res: Response) => {
